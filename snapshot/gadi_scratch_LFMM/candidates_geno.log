@@ -1,0 +1,28 @@
+PLINK v2.0.0-a.7.0LM 64-bit Intel (25 Apr 2026)
+Options in effect:
+  --allow-extra-chr
+  --bfile /g/data/xe2/projects/paneuc2/notes/2026-07-22_pauci-gea/ash_scdp3_sampmiss50_q30_snpmiss40_biallelic_mac10
+  --export A
+  --extract /scratch/xe2/eh4663/LFMM/candidates_prune_very_strict.prune.in
+  --out /scratch/xe2/eh4663/LFMM/candidates_geno
+  --threads 8
+
+Hostname: gadi-login-04.gadi.nci.org.au
+Working directory: /g/data/xe2/eh4663/scripts
+Start time: Sun Sep  6 22:14:13 2026
+
+Random number seed: 1788696853
+256271 MiB RAM detected, ~98792 available; reserving 98728 MiB for main
+workspace.
+Using up to 8 compute threads.
+526 samples (0 females, 0 males, 526 ambiguous; 526 founders) loaded from
+/g/data/xe2/projects/paneuc2/notes/2026-07-22_pauci-gea/ash_scdp3_sampmiss50_q30_snpmiss40_biallelic_mac10.fam.
+Note: 11 nonstandard chromosome codes present.
+20450522 variants loaded from
+/g/data/xe2/projects/paneuc2/notes/2026-07-22_pauci-gea/ash_scdp3_sampmiss50_q30_snpmiss40_biallelic_mac10.bim.
+Note: No phenotype data present.
+--extract: 15874 variants remaining.
+15874 variants remaining after main filters.
+--export A: /scratch/xe2/eh4663/LFMM/candidates_geno.raw written.
+
+End time: Sun Sep  6 22:14:16 2026

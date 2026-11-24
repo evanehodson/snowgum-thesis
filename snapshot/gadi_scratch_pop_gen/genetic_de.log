@@ -1,0 +1,29 @@
+PLINK v1.9.0-b.7.11 64-bit (19 Aug 2025)
+Options in effect:
+  --allow-extra-chr
+  --bfile snowgum_filtered
+  --distance 1-ibs square
+  --keep pauciflora_samples.txt
+  --out genetic_de
+
+Hostname: gadi-login-05.gadi.nci.org.au
+Working directory: /scratch/xe2/eh4663/pop_gen
+Start time: Sun Sep  6 09:09:11 2026
+
+Random number seed: 1788649751
+256271 MB RAM detected; reserving 128135 MB for main workspace.
+20450522 variants loaded from .bim file.
+390 people (0 males, 0 females, 390 ambiguous) loaded from .fam.
+Ambiguous sex IDs written to genetic_de.nosex .
+--keep: 260 people remaining.
+Using up to 47 threads (change this with --threads).
+Before main variant filters, 260 founders and 0 nonfounders present.
+Calculating allele frequencies... done.
+Total genotyping rate in remaining samples is 0.910027.
+20450522 variants and 260 people pass filters and QC.
+Note: No phenotypes present.
+Distance matrix calculation complete.
+IDs written to genetic_de.mdist.id .
+Distances (proportions) written to genetic_de.mdist .
+
+End time: Sun Sep  6 09:10:15 2026

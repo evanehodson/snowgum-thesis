@@ -1,0 +1,29 @@
+PLINK v2.0.0-a.7.0LM 64-bit Intel (25 Apr 2026)
+Options in effect:
+  --bfile snowgum_filtered
+  --export vcf
+  --extract pruned_snps.prune.in
+  --new-id-max-allele-len 97
+  --out snowgums_200k_pruned
+  --set-all-var-ids @:#:$r:$a
+
+Hostname: gadi-login-03.gadi.nci.org.au
+Working directory: /scratch/xe2/eh4663/pop_gen
+Start time: Wed Sep  2 12:44:20 2026
+
+Random number seed: 1788317060
+256271 MiB RAM detected, ~77806 available; reserving 77742 MiB for main
+workspace.
+Using up to 48 threads (change this with --threads).
+390 samples (0 females, 0 males, 390 ambiguous; 390 founders) loaded from
+snowgum_filtered.fam.
+Note: 11 nonstandard chromosome codes present.
+20450522 variants loaded from snowgum_filtered.bim.
+Note: No phenotype data present.
+--extract: 197879 variants remaining.
+197879 variants remaining after main filters.
+Warning: '_' present in original sample IDs; --vcf will not be able to
+reconstruct them. Consider rerunning with a suitable --export id-delim= value.
+--export vcf to snowgums_200k_pruned.vcf ... done.
+
+End time: Wed Sep  2 12:44:34 2026

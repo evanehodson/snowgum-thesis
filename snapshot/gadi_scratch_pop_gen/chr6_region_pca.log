@@ -1,0 +1,28 @@
+PLINK v2.0.0-a.7.0LM 64-bit Intel (25 Apr 2026)
+Options in effect:
+  --allow-extra-chr
+  --bfile chr6_region_pauci_niph
+  --out chr6_region_pca
+  --pca 10
+
+Hostname: gadi-login-09.gadi.nci.org.au
+Working directory: /scratch/xe2/eh4663/pop_gen
+Start time: Sat Sep  5 16:26:40 2026
+
+Random number seed: 1788589600
+256271 MiB RAM detected, ~100274 available; reserving 100210 MiB for main
+workspace.
+Using up to 48 threads (change this with --threads).
+306 samples (0 females, 0 males, 306 ambiguous; 306 founders) loaded from
+chr6_region_pauci_niph.fam.
+Note: 1 nonstandard chromosome code present.
+515243 variants loaded from chr6_region_pauci_niph.bim.
+Note: No phenotype data present.
+Calculating allele frequencies... done.
+Constructing GRM: done.
+Correcting for missingness... done.
+Extracting eigenvalues and eigenvectors... done.
+--pca: Eigenvectors written to chr6_region_pca.eigenvec , and eigenvalues
+written to chr6_region_pca.eigenval .
+
+End time: Sat Sep  5 16:26:56 2026

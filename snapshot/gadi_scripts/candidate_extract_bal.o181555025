@@ -1,0 +1,68 @@
+ERROR: Unable to locate a modulefile for 'plink2'
+PLINK v2.0.0-a.7.0LM 64-bit Intel (25 Apr 2026)     cog-genomics.org/plink/2.0/
+(C) 2005-2026 Shaun Purcell, Christopher Chang    GNU General Public License v3
+Logging to /scratch/xe2/eh4663/LFMM/candidates_prune_balanced.log.
+Options in effect:
+  --allow-extra-chr
+  --bfile ash_scdp3_sampmiss50_q30_snpmiss40_biallelic_mac10
+  --extract bed1 /g/data/xe2/eh4663/scripts/candidates_merged_balanced.bed
+  --indep-pairwise 10kb 1 0.7
+  --out /scratch/xe2/eh4663/LFMM/candidates_prune_balanced
+  --threads 8
+
+Start time: Mon Oct 19 14:39:39 2026
+193084 MiB RAM detected, ~153690 available; reserving 96542 MiB for main
+workspace.
+Using up to 8 compute threads.
+526 samples (0 females, 0 males, 526 ambiguous; 526 founders) loaded from
+ash_scdp3_sampmiss50_q30_snpmiss40_biallelic_mac10.fam.
+Note: 11 nonstandard chromosome codes present.
+20450522 variants loaded from
+ash_scdp3_sampmiss50_q30_snpmiss40_biallelic_mac10.bim.
+Note: No phenotype data present.
+--extract bed1: 20324890 variants excluded.
+Calculating allele frequencies... 0%1%7%20%21%24%25%27%28%29%33%36%40%50%58%61%67%69%71%73%75%78%92%93%97%99%done.
+125632 variants remaining after main filters.
+--indep-pairwise (7 compute threads): 0%50%76462/125632 variants removed.
+Writing...Variant lists written to
+/scratch/xe2/eh4663/LFMM/candidates_prune_balanced.prune.in and
+/scratch/xe2/eh4663/LFMM/candidates_prune_balanced.prune.out .
+End time: Mon Oct 19 14:39:42 2026
+PLINK v2.0.0-a.7.0LM 64-bit Intel (25 Apr 2026)     cog-genomics.org/plink/2.0/
+(C) 2005-2026 Shaun Purcell, Christopher Chang    GNU General Public License v3
+Logging to /scratch/xe2/eh4663/LFMM/candidates_geno_balanced.log.
+Options in effect:
+  --allow-extra-chr
+  --bfile ash_scdp3_sampmiss50_q30_snpmiss40_biallelic_mac10
+  --export A
+  --extract /scratch/xe2/eh4663/LFMM/candidates_prune_balanced.prune.in
+  --out /scratch/xe2/eh4663/LFMM/candidates_geno_balanced
+  --threads 8
+
+Start time: Mon Oct 19 14:39:42 2026
+193084 MiB RAM detected, ~153539 available; reserving 96542 MiB for main
+workspace.
+Using up to 8 compute threads.
+526 samples (0 females, 0 males, 526 ambiguous; 526 founders) loaded from
+ash_scdp3_sampmiss50_q30_snpmiss40_biallelic_mac10.fam.
+Note: 11 nonstandard chromosome codes present.
+20450522 variants loaded from
+ash_scdp3_sampmiss50_q30_snpmiss40_biallelic_mac10.bim.
+Note: No phenotype data present.
+--extract: 49170 variants remaining.
+49170 variants remaining after main filters.
+--export A pass 1/1: loading... 0%1%8%23%26%27%29%30%34%36%39%49%50%56%59%66%67%70%71%72%75%91%92%93%97%99% writing... 0%1%2%3%4%5%6%7%8%9%10%11%12%13%14%15%16%17%18%19%20%21%22%23%24%25%26%27%28%29%30%31%32%33%34%35%36%37%38%39%40%41%42%43%44%45%46%47%48%49%50%51%52%53%54%55%56%57%58%59%60%61%62%63%64%65%66%67%68%69%70%71%72%73%74%75%76%77%78%79%80%81%82%83%84%85%86%87%88%89%90%91%92%93%94%95%96%97%98%99% done.
+--export A: /scratch/xe2/eh4663/LFMM/candidates_geno_balanced.raw written.
+End time: Mon Oct 19 14:39:45 2026
+
+======================================================================================
+                  Resource Usage on 2026-10-19 14:39:48:
+   Job Id:             181555025.gadi-pbs
+   Project:            xe2
+   Exit Status:        0
+   Service Units:      0.04
+   NCPUs Requested:    8                   CPU Time Used: 00:00:10        
+   Memory Requested:   32.0GB                Memory Used: 2.89GB          
+   Walltime Requested: 00:40:00            Walltime Used: 00:00:08        
+   JobFS Requested:    100.0MB                JobFS Used: 0B              
+======================================================================================

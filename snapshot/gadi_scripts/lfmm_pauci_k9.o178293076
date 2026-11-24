@@ -1,0 +1,27 @@
+Loading BED file: ash_scdp3_sampmiss50_q30_snpmiss40_biallelic_mac10.bed
+  526 samples x 20450522 SNPs
+Loading covariates from: /scratch/xe2/eh4663/LFMM/env_cov_pauci.csv
+  Read 258 samples from covariate file
+  Warning: 268 sample(s) in .fam file not present in covariate file (dropped with --intersect-samples)
+  Matched 258 samples to .fam order
+  258 samples x 4 covariates: [bio15_1981-2010, bio06_1981-2010, bio04_1981-2010, bio17_1981-2010]
+Loading estimation BED file: ash_scdp3_sampmiss50_q30_snpmiss40_biallelic_mac10_thin10kbp.bed
+  Reordering/subsetting est-bed samples to match main BED (526 → 258 samples)
+  258 samples x 44078 SNPs (for factor estimation)
+Running LFMM2: K=9, lambda=1.0e-5, chunk_size=10000, threads=48, oversampling=10, power_iter=2
+Output format: Parquet
+GIF: 0.5298
+Results written to /scratch/xe2/eh4663/LFMM/lfmm_pauci_k9_nonmf.parquet
+Done. Output: /scratch/xe2/eh4663/LFMM/lfmm_pauci_k9_nonmf.parquet, /scratch/xe2/eh4663/LFMM/lfmm_pauci_k9_nonmf.summary.txt
+
+======================================================================================
+                  Resource Usage on 2026-09-06 21:44:39:
+   Job Id:             178293076.gadi-pbs
+   Project:            xe2
+   Exit Status:        0
+   Service Units:      0.85
+   NCPUs Requested:    48                  CPU Time Used: 00:09:21        
+   Memory Requested:   192.0GB               Memory Used: 15.42GB         
+   Walltime Requested: 04:00:00            Walltime Used: 00:00:32        
+   JobFS Requested:    10.0GB                 JobFS Used: 0B              
+======================================================================================

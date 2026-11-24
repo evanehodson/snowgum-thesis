@@ -1,0 +1,32 @@
+PLINK v2.0.0-a.7.0LM 64-bit Intel (25 Apr 2026)
+Options in effect:
+  --allow-extra-chr
+  --bfile snowgum_filtered
+  --fst Taxon method=wc
+  --keep admixture_keep_samples_fixed.txt
+  --out pairwise_fst_results
+  --pheno taxa_pheno_fixed.txt
+  --pheno-name Taxon
+
+Hostname: gadi-login-09.gadi.nci.org.au
+Working directory: /scratch/xe2/eh4663/pop_gen
+Start time: Sat Sep  5 16:07:30 2026
+
+Random number seed: 1788588450
+256271 MiB RAM detected, ~97217 available; reserving 97153 MiB for main
+workspace.
+Using up to 48 threads (change this with --threads).
+390 samples (0 females, 0 males, 390 ambiguous; 390 founders) loaded from
+snowgum_filtered.fam.
+Note: 11 nonstandard chromosome codes present.
+20450522 variants loaded from snowgum_filtered.bim.
+1 categorical phenotype loaded (382 values).
+--keep: 382 samples remaining.
+382 samples (0 females, 0 males, 382 ambiguous; 382 founders) remaining after
+main filters.
+382 categorical phenotype values remaining after main filters.
+--fst: Analyzing 382 samples across 3 populations.
+Autosomal --fst: done.
+Autosomal --fst: Summary written to pairwise_fst_results.fst.summary .
+
+End time: Sat Sep  5 16:07:37 2026

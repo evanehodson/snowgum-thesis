@@ -1,0 +1,29 @@
+PLINK v1.9.0-b.7.11 64-bit (19 Aug 2025)
+Options in effect:
+  --allow-extra-chr
+  --bfile snowgum_filtered
+  --distance 1-ibs square
+  --keep admixture_keep_samples_fixed.txt
+  --out pauci_stellulata_1minusIBS
+
+Hostname: gadi-login-09.gadi.nci.org.au
+Working directory: /scratch/xe2/eh4663/pop_gen
+Start time: Sat Sep  5 16:11:06 2026
+
+Random number seed: 1788588666
+256271 MB RAM detected; reserving 128135 MB for main workspace.
+20450522 variants loaded from .bim file.
+390 people (0 males, 0 females, 390 ambiguous) loaded from .fam.
+Ambiguous sex IDs written to pauci_stellulata_1minusIBS.nosex .
+--keep: 382 people remaining.
+Using up to 47 threads (change this with --threads).
+Before main variant filters, 382 founders and 0 nonfounders present.
+Calculating allele frequencies... done.
+Total genotyping rate in remaining samples is 0.902634.
+20450522 variants and 382 people pass filters and QC.
+Note: No phenotypes present.
+Distance matrix calculation complete.
+IDs written to pauci_stellulata_1minusIBS.mdist.id .
+Distances (proportions) written to pauci_stellulata_1minusIBS.mdist .
+
+End time: Sat Sep  5 16:12:48 2026

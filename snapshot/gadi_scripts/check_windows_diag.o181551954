@@ -1,0 +1,35 @@
+Loading python3/3.11.7
+  Loading requirement: intel-mkl/2023.2.0
+/g/data/xe2/eh4663/scripts/check_windows.py:129: DeprecationWarning: 
+Pyarrow will become a required dependency of pandas in the next major release of pandas (pandas 3.0),
+(to allow more performant data types, such as the Arrow string type, and better interoperability with other libraries)
+but was not found to be installed on your system.
+If this would cause problems for you,
+please provide us feedback at https://github.com/pandas-dev/pandas/issues/54466
+        
+  """).fetchdf()
+Loading Parquet data into DuckDB...
+Running local score calculation across predictors...
+
+============================================================
+DIAGNOSTIC: Window breakdown per predictor (Pre-Filter)
+============================================================
+           envvar  total_windows_passed_lindley  windows_ge_100  windows_lt_100  max_peak_score
+p_bio04_1981-2010                          2247             6.0          2241.0      483.135142
+p_bio06_1981-2010                          3025            11.0          3014.0     1238.940448
+p_bio15_1981-2010                         57695           284.0         57411.0    22990.823361
+p_bio17_1981-2010                          3985            10.0          3975.0     2729.708208
+============================================================
+Diagnostic complete. No files were modified or written.
+
+======================================================================================
+                  Resource Usage on 2026-10-19 14:10:51:
+   Job Id:             181551954.gadi-pbs
+   Project:            xe2
+   Exit Status:        0
+   Service Units:      0.28
+   NCPUs Requested:    4                   CPU Time Used: 00:07:16        
+   Memory Requested:   16.0GB                Memory Used: 9.9GB           
+   Walltime Requested: 00:30:00            Walltime Used: 00:02:07        
+   JobFS Requested:    5.0GB                  JobFS Used: 0B              
+======================================================================================

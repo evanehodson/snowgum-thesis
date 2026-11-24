@@ -1,0 +1,9 @@
+GIF: 0.529787
+n_samples: 258
+n_snps: 20450522
+K: 9
+d: 4
+covariates: bio15_1981-2010, bio06_1981-2010, bio04_1981-2010, bio17_1981-2010
+lambda: 0.00001
+threads: 48
+imputation: mean

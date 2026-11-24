@@ -1,0 +1,30 @@
+PLINK v2.0.0-a.7.0LM 64-bit Intel (25 Apr 2026)
+Options in effect:
+  --bfile snowgum_filtered
+  --het small-sample
+  --keep keep_niphophila.txt
+  --out het_niphophila
+  --read-freq freq_niphophila.afreq
+
+Hostname: gadi-login-08.gadi.nci.org.au
+Working directory: /scratch/xe2/eh4663/pop_gen
+Start time: Tue Nov 17 12:04:43 2026
+
+Random number seed: 1794877483
+256271 MiB RAM detected, ~112802 available; reserving 112738 MiB for main
+workspace.
+Using up to 48 threads (change this with --threads).
+390 samples (0 females, 0 males, 390 ambiguous; 390 founders) loaded from
+snowgum_filtered.fam.
+Note: 11 nonstandard chromosome codes present.
+20450522 variants loaded from snowgum_filtered.bim.
+Note: No phenotype data present.
+--keep: 46 samples remaining.
+46 samples (0 females, 0 males, 46 ambiguous; 46 founders) remaining after main
+filters.
+Warning: Ignoring --read-freq since no command would use the frequencies.
+--het: done.
+Warning: 9507709 variants skipped because they were monomorphic.
+--het: Results written to het_niphophila.het .
+
+End time: Tue Nov 17 12:04:52 2026

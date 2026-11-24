@@ -1,0 +1,18 @@
+Loading python3/3.11.7
+  Loading requirement: intel-mkl/2023.2.0
+Loading Parquet data into DuckDB...
+Running local score calculation...
+Exporting balanced candidate intervals...
+Successfully generated 'candidates_merged_balanced.bed'.
+
+======================================================================================
+                  Resource Usage on 2026-10-19 14:46:05:
+   Job Id:             181555346.gadi-pbs
+   Project:            xe2
+   Exit Status:        0
+   Service Units:      0.25
+   NCPUs Requested:    4                   CPU Time Used: 00:06:57        
+   Memory Requested:   16.0GB                Memory Used: 11.25GB         
+   Walltime Requested: 00:30:00            Walltime Used: 00:01:52        
+   JobFS Requested:    5.0GB                  JobFS Used: 0B              
+======================================================================================

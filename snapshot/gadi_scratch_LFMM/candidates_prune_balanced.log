@@ -1,0 +1,32 @@
+PLINK v2.0.0-a.7.0LM 64-bit Intel (25 Apr 2026)
+Options in effect:
+  --allow-extra-chr
+  --bfile ash_scdp3_sampmiss50_q30_snpmiss40_biallelic_mac10
+  --extract bed1 /g/data/xe2/eh4663/scripts/candidates_merged_balanced.bed
+  --indep-pairwise 10kb 1 0.7
+  --out /scratch/xe2/eh4663/LFMM/candidates_prune_balanced
+  --threads 8
+
+Hostname: gadi-cpu-clx-1104.gadi.nci.org.au
+Working directory: /g/data/xe2/projects/paneuc2/notes/2026-07-22_pauci-gea
+Start time: Mon Oct 19 14:49:40 2026
+
+Random number seed: 1792381780
+193084 MiB RAM detected, ~162206 available; reserving 96542 MiB for main
+workspace.
+Using up to 8 compute threads.
+526 samples (0 females, 0 males, 526 ambiguous; 526 founders) loaded from
+ash_scdp3_sampmiss50_q30_snpmiss40_biallelic_mac10.fam.
+Note: 11 nonstandard chromosome codes present.
+20450522 variants loaded from
+ash_scdp3_sampmiss50_q30_snpmiss40_biallelic_mac10.bim.
+Note: No phenotype data present.
+--extract bed1: 20392171 variants excluded.
+Calculating allele frequencies... done.
+58351 variants remaining after main filters.
+--indep-pairwise (4 compute threads): 35456/58351 variants removed.
+Variant lists written to
+/scratch/xe2/eh4663/LFMM/candidates_prune_balanced.prune.in and
+/scratch/xe2/eh4663/LFMM/candidates_prune_balanced.prune.out .
+
+End time: Mon Oct 19 14:49:42 2026

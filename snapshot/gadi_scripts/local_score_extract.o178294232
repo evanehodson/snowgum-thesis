@@ -1,0 +1,15 @@
+Loading python3/3.11.7
+  Loading requirement: intel-mkl/2023.2.0
+Successfully generated 'candidates_merged.bed'.
+
+======================================================================================
+                  Resource Usage on 2026-09-06 22:00:58:
+   Job Id:             178294232.gadi-pbs
+   Project:            xe2
+   Exit Status:        0
+   Service Units:      0.27
+   NCPUs Requested:    4                   CPU Time Used: 00:07:06        
+   Memory Requested:   16.0GB                Memory Used: 11.31GB         
+   Walltime Requested: 00:30:00            Walltime Used: 00:02:00        
+   JobFS Requested:    5.0GB                  JobFS Used: 0B              
+======================================================================================

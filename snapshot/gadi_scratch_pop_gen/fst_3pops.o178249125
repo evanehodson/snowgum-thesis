@@ -1,0 +1,12 @@
+
+======================================================================================
+                  Resource Usage on 2026-09-05 16:43:15:
+   Job Id:             178249125.gadi-pbs
+   Project:            xe2
+   Exit Status:        0
+   Service Units:      3.39
+   NCPUs Requested:    2                   CPU Time Used: 00:25:26        
+   Memory Requested:   16.0GB                Memory Used: 1.83GB          
+   Walltime Requested: 01:30:00            Walltime Used: 00:25:27        
+   JobFS Requested:    100.0MB                JobFS Used: 0B              
+======================================================================================

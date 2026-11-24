@@ -1,0 +1,69 @@
+
+VCFtools - 0.1.18
+(C) Adam Auton and Anthony Marcketta 2009
+
+Parameters as interpreted:
+	--gzvcf snowgum_filtered.vcf.gz
+	--fst-window-size 50000
+	--fst-window-step 10000
+	--weir-fst-pop Eucalyptus_pauciflora_subsp_niphophila_samples.txt
+	--weir-fst-pop Eucalyptus_pauciflora_subsp_pauciflora_samples.txt
+	--keep Eucalyptus_pauciflora_subsp_niphophila_samples.txt
+	--keep Eucalyptus_pauciflora_subsp_pauciflora_samples.txt
+	--out fst_niph_vs_pauc_50kb
+
+Using zlib version: 1.2.11
+Warning: Expected at least 2 parts in INFO entry: ID=PR,Number=0,Type=Flag,Description="Provisional reference allele, may not be based on real reference genome">
+Keeping individuals in 'keep' list
+After filtering, kept 306 out of 390 Individuals
+Outputting Windowed Weir and Cockerham Fst estimates.
+Weir and Cockerham mean Fst estimate: 0.032118
+Weir and Cockerham weighted Fst estimate: 0.073783
+After filtering, kept 20450522 out of a possible 20450522 Sites
+Run Time = 526.00 seconds
+
+VCFtools - 0.1.18
+(C) Adam Auton and Anthony Marcketta 2009
+
+Parameters as interpreted:
+	--gzvcf snowgum_filtered.vcf.gz
+	--fst-window-size 50000
+	--fst-window-step 10000
+	--weir-fst-pop Eucalyptus_pauciflora_subsp_niphophila_samples.txt
+	--weir-fst-pop Eucalyptus_stellulata_samples.txt
+	--keep Eucalyptus_pauciflora_subsp_niphophila_samples.txt
+	--keep Eucalyptus_stellulata_samples.txt
+	--out fst_niph_vs_stel_50kb
+
+Using zlib version: 1.2.11
+Warning: Expected at least 2 parts in INFO entry: ID=PR,Number=0,Type=Flag,Description="Provisional reference allele, may not be based on real reference genome">
+Keeping individuals in 'keep' list
+After filtering, kept 122 out of 390 Individuals
+Outputting Windowed Weir and Cockerham Fst estimates.
+Weir and Cockerham mean Fst estimate: 0.11688
+Weir and Cockerham weighted Fst estimate: 0.28175
+After filtering, kept 20450522 out of a possible 20450522 Sites
+Run Time = 478.00 seconds
+
+VCFtools - 0.1.18
+(C) Adam Auton and Anthony Marcketta 2009
+
+Parameters as interpreted:
+	--gzvcf snowgum_filtered.vcf.gz
+	--fst-window-size 50000
+	--fst-window-step 10000
+	--weir-fst-pop Eucalyptus_pauciflora_subsp_pauciflora_samples.txt
+	--weir-fst-pop Eucalyptus_stellulata_samples.txt
+	--keep Eucalyptus_pauciflora_subsp_pauciflora_samples.txt
+	--keep Eucalyptus_stellulata_samples.txt
+	--out fst_pauc_vs_stel_50kb
+
+Using zlib version: 1.2.11
+Warning: Expected at least 2 parts in INFO entry: ID=PR,Number=0,Type=Flag,Description="Provisional reference allele, may not be based on real reference genome">
+Keeping individuals in 'keep' list
+After filtering, kept 336 out of 390 Individuals
+Outputting Windowed Weir and Cockerham Fst estimates.
+Weir and Cockerham mean Fst estimate: 0.10913
+Weir and Cockerham weighted Fst estimate: 0.2715
+After filtering, kept 20450522 out of a possible 20450522 Sites
+Run Time = 522.00 seconds

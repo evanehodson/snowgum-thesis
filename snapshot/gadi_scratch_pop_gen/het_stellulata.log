@@ -1,0 +1,38 @@
+PLINK v2.0.0-a.7.0LM 64-bit Intel (25 Apr 2026)
+Options in effect:
+  --allow-extra-chr
+  --bfile snowgum_filtered
+  --het
+  --keep keep_stellulata.txt
+  --out het_stellulata
+  --read-freq freq_stellulata.afreq
+  --rm-dup force-first
+
+Hostname: gadi-login-09.gadi.nci.org.au
+Working directory: /scratch/xe2/eh4663/pop_gen
+Start time: Thu Oct  8 19:44:28 2026
+
+Random number seed: 1791449068
+256271 MiB RAM detected, ~110782 available; reserving 110718 MiB for main
+workspace.
+Using up to 48 threads (change this with --threads).
+390 samples (0 females, 0 males, 390 ambiguous; 390 founders) loaded from
+snowgum_filtered.fam.
+Note: 11 nonstandard chromosome codes present.
+20450522 variants loaded from snowgum_filtered.bim.
+Note: No phenotype data present.
+--rm-dup: 29 duplicated IDs, 87 variants removed.
+--keep: 76 samples remaining.
+76 samples (0 females, 0 males, 76 ambiguous; 76 founders) remaining after main
+filters.
+--read-freq: PLINK 2 --freq file detected.
+--read-freq: Frequencies for 20446691 variants loaded.
+Warning: 3744 entries skipped due to missing variant IDs, mismatching allele
+codes, and/or zero observations.
+Calculating allele frequencies... done.
+--het: done.
+Warning: 10262028 variants skipped because they were monomorphic. You may want
+to use --read-freq to provide more accurate allele frequency estimates.
+--het: Results written to het_stellulata.het .
+
+End time: Thu Oct  8 19:44:40 2026
