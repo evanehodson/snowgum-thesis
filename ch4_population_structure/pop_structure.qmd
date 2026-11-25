@@ -1,0 +1,370 @@
+---
+title: "Chapter 4: Population structure of snow gum (*Eucalyptus pauciflora*)"
+subtitle: "Analysis notebook with methods, results, and provenance"
+author: "Evan Hodson"
+date: today
+format:
+  html:
+    toc: true
+    toc-depth: 3
+    code-fold: true
+    embed-resources: true
+    fig-width: 8
+    fig-height: 6.5
+execute:
+  warning: false
+  message: false
+---
+
+## About this notebook
+
+This notebook documents the population structure analysis in Chapter 4 of the thesis: kinship, PCA, ADMIXTURE, heterozygosity, Fst, windowed Fst, local PCA of chromosome 6, the choice of latent factors, and isolation by distance. It shows the final results and describes each method in enough detail for someone with the inputs to repeat it.
+
+**Scope.** Upstream steps that ran on Gadi (PLINK 2 filtering and pruning, ADMIXTURE, vcftools windowed Fst) are documented here but not rerun. This notebook reads their saved outputs. The original script this notebook replaces is archived unchanged at `snapshot/local/genomic_data/pop_gen/pop_gen.R`.
+
+**Status.** Sections 1 to 3 and the sensitivity check (section 4) are complete. Sections 5 onward are stubs, listed in the order they will be converted.
+
+**To render** (PowerShell, from this folder), after pointing `POPGEN_DATA` at the input folder if it is not in the default location below:
+
+```
+quarto render pop_structure.qmd
+```
+
+## 1. Setup and provenance
+
+```{r setup}
+library(SNPRelate)
+library(tidyverse)
+library(patchwork)
+library(knitr)
+
+set.seed(43)  # arbitrary; ADMIXTURE also used seed 43. Needed here only for any permutation test added later.
+
+# Folder holding the small input files (kept outside the repository)
+data_dir <- Sys.getenv("POPGEN_DATA",
+  unset = "C:/Users/evane/OneDrive/Desktop/Masters Dissertation/genomic_data/pop_gen")
+out_dir <- "output"
+dir.create(out_dir, showWarnings = FALSE)
+
+species_colors <- c(
+  "Eucalyptus pauciflora subsp. niphophila" = "#56B4E9",
+  "Eucalyptus pauciflora subsp. pauciflora" = "#E69F00",
+  "Eucalyptus stellulata"                   = "#CC79A7"
+)
+```
+
+### Inputs
+
+| File (in `data_dir`) | Made by | Used in |
+|---|---|---|
+| `snowgums_200k_pruned.vcf.gz` (197,879 LD-pruned SNPs; converted to `.gds` on first run) | PLINK 2 LD pruning of the filtered VCF on Gadi (100 kb window, r² 0.05; exact command to be confirmed from `snapshot/gadi_scripts/`) | kinship, PCA, IBS, ADMIXTURE |
+| `snowgums_200k_stride.vcf.gz` (stride-thinned set) | `stride_sample.sh` on Gadi | sensitivity check (section 4) |
+| `snowgums_clean_pruned.{bed,bim,fam}`, `.K1-7.log`, `.1-7.Q` | ADMIXTURE 1.4.0, `--cv=5`, seed 43, K = 1 to 7 (command reconstructed from the logs, not recorded) | section 5 |
+| `het_*.het`, `freq_*.afreq` | PLINK 2 `--het`, `--freq` per taxon | section 6 |
+| `pairwise_fst_results.fst.summary` | PLINK 2 `--fst Taxon method=wc` | section 7 |
+| `fst_*_50kb.windowed.weir.fst` | vcftools windowed Weir and Cockerham Fst, 50 kb | section 8 |
+| `chr6_region_pca.eigenvec`, `chr6_region_het.het` | PLINK 2 `--pca 10` and `--het` on the chr6 subset | section 9 |
+| `pauci_stellulata_1minusIBS.mdist(.id)` (382 samples) | PLINK `--distance` on Gadi | section 11 |
+| `sample_metadata_snapshot.csv` | dated export of the sample metadata Google Sheet (see below) | all sections |
+
+### Sample metadata
+
+The metadata live in a Google Sheet that can change. The first time this notebook runs it saves a dated snapshot next to the data, and every later run reads the snapshot. The snapshot contains collection coordinates, so it stays in `data_dir` and is not committed to the repository. Check with the supervisors before any public release.
+
+```{r metadata}
+meta_snapshot <- file.path(data_dir, "sample_metadata_snapshot.csv")
+if (file.exists(meta_snapshot)) {
+  euc_meta <- read_csv(meta_snapshot, show_col_types = FALSE)
+} else {
+  euc_meta <- read_csv(
+    "https://docs.google.com/spreadsheets/d/1QI4KE4M7i8ST6mLNoG8rkkfkUio_3AGQRQY6PQ3Sg24/export?gid=4473427&format=csv",
+    show_col_types = FALSE)
+  write_csv(euc_meta, meta_snapshot)
+}
+
+# plink2's VCF export doubles sample IDs (ID_ID); match the metadata to that format
+euc_meta <- euc_meta %>%
+  mutate(fastq_sample_name = paste(fastq_sample_name, fastq_sample_name, sep = "_"))
+```
+
+### Genotype file
+
+```{r gds}
+pruned_gds_path <- file.path(data_dir, "snowgums_200k_pruned.gds")
+if (!file.exists(pruned_gds_path)) {
+  snpgdsVCF2GDS(file.path(data_dir, "snowgums_200k_pruned.vcf.gz"),
+                pruned_gds_path, verbose = FALSE)
+}
+pruned_gds <- snpgdsOpen(pruned_gds_path)
+
+pruned_sampinfo <- snpgdsSummary(pruned_gds, show = FALSE)
+initial_good_samples <- pruned_sampinfo$sample.id[
+  pruned_sampinfo$sample.id %in% euc_meta$fastq_sample_name
+]
+
+meta <- euc_meta[match(initial_good_samples, euc_meta$fastq_sample_name), ] %>%
+  mutate(species_clean = species %>% str_replace("X.*", "") %>% str_replace(" x .*", ""))
+
+cat("SNPs in the pruned panel:", length(pruned_sampinfo$snp.id), "\n")
+cat("Samples starting the analysis:", length(initial_good_samples), "(expected 390)\n")
+```
+
+## 2. Kinship
+
+**Method.** Relatedness was estimated with the KING-robust estimator (Manichaikul et al. 2010) as implemented in SNPRelate (`snpgdsIBDKING`), on the 197,879 LD-pruned SNPs. KING-robust stays valid under population structure because it uses shared allele counts between individuals rather than population-level allele frequencies, which suits a dataset spanning more than one taxon. Pairs with a kinship coefficient above 0.177 (the geometric mean of the expected first-degree and second-degree values, 0.25 and 0.125) were treated as first-degree relatives. From each pair, the sample with the higher missingness was excluded.
+
+```{r kinship, cache=TRUE}
+king <- snpgdsIBDKING(pruned_gds, sample.id = initial_good_samples,
+                      autosome.only = FALSE, verbose = FALSE)
+kinship_mat <- king$kinship
+rownames(kinship_mat) <- colnames(kinship_mat) <- king$sample.id
+
+kinship_long <- kinship_mat %>%
+  as.data.frame() %>%
+  rownames_to_column("sample_1") %>%
+  pivot_longer(-sample_1, names_to = "sample_2", values_to = "kinship") %>%
+  filter(sample_1 != sample_2) %>%
+  left_join(meta %>% select(sample_id = fastq_sample_name, species_clean),
+            by = join_by(sample_1 == sample_id)) %>%
+  left_join(meta %>% select(sample_id = fastq_sample_name, species_clean),
+            by = join_by(sample_2 == sample_id), suffix = c("_1", "_2"))
+
+close_relatives <- kinship_long %>%
+  filter(sample_1 < sample_2, kinship > 0.177) %>%
+  arrange(desc(kinship))
+
+write_csv(close_relatives, file.path(out_dir, "king_close_relative_pairs.csv"))
+
+pruned_missrate <- snpgdsSampMissRate(pruned_gds, sample.id = initial_good_samples)
+names(pruned_missrate) <- initial_good_samples
+
+related_exclusions <- close_relatives %>%
+  mutate(miss_1 = pruned_missrate[sample_1],
+         miss_2 = pruned_missrate[sample_2],
+         exclude = if_else(miss_1 >= miss_2, sample_1, sample_2)) %>%
+  pull(exclude) %>%
+  unique()
+
+n_before_kinship <- length(initial_good_samples)
+initial_good_samples <- setdiff(initial_good_samples, related_exclusions)
+meta <- meta %>% filter(!fastq_sample_name %in% related_exclusions)
+```
+
+```{r kinship-table}
+kable(close_relatives %>% mutate(kinship = round(kinship, 3)),
+      caption = "Pairs above the first-degree threshold (kinship > 0.177)")
+cat("Excluded for relatedness:", paste(related_exclusions, collapse = ", "), "\n")
+cat("Samples before and after:", n_before_kinship, "->", length(initial_good_samples),
+    "(thesis reports three pairs, so three exclusions)\n")
+```
+
+## 3. Principal component analysis
+
+**Method.** PCA used `snpgdsPCA` on the same LD-pruned panel, with all sequence classes included (`autosome.only = FALSE`). Seventy-six *E. stellulata* samples, processed in parallel and subject to the same QC and pruning, serve as an outgroup. Outliers were removed iteratively: PCA was run, samples meeting the filter condition were dropped, and PCA was rerun on the remainder. The only filter used was `PC01 < -0.2`, applied once.
+
+```{r pca, cache=TRUE}
+pca_to_df <- function(pca) {
+  pcadf <- pca$eigenvect %>% as.data.frame()
+  colnames(pcadf) <- sprintf("PC%02d", 1:ncol(pcadf))
+  pcadf %>% mutate(sample_id = as.character(pca$sample.id))
+}
+
+run_iterative_pca_cleanup <- function(gds, initial_samples, filter_strings) {
+  current_samples <- initial_samples
+  for (filter_str in filter_strings) {
+    pca <- snpgdsPCA(gds, sample.id = current_samples, autosome.only = FALSE, verbose = FALSE)
+    df  <- pca_to_df(pca)
+    outliers <- pca$sample.id[eval(parse(text = filter_str), envir = df)]
+    current_samples <- setdiff(current_samples, outliers)
+  }
+  final_pca <- snpgdsPCA(gds, sample.id = current_samples, autosome.only = FALSE, verbose = FALSE)
+  list(pca = final_pca, df = pca_to_df(final_pca), outliers_removed = setdiff(initial_samples, current_samples))
+}
+
+global_filters <- c("PC01 < -0.2")
+pca_results <- run_iterative_pca_cleanup(pruned_gds, initial_good_samples, global_filters)
+
+pca_data <- pca_results$df %>%
+  left_join(meta, by = join_by(sample_id == fastq_sample_name))
+
+writeLines(pca_results$pca$sample.id, file.path(out_dir, "final_pca_samples.txt"))
+```
+
+```{r pca-counts}
+cat("PCA outliers removed:", length(pca_results$outliers_removed),
+    "(thesis reports four):", paste(pca_results$outliers_removed, collapse = ", "), "\n")
+cat("Samples in the final PCA:", nrow(pca_data), "\n")
+```
+
+### Figure 7a: PC1 versus PC2
+
+```{r fig-pca12}
+pc_lab <- function(pca, i) paste0("PC", sprintf("%02d", i), " (", round(pca$varprop[i] * 100, 1), "%)")
+
+pca_theme <- theme_bw() +
+  theme(legend.position = "bottom", legend.text = element_text(size = 8),
+        plot.title = element_text(face = "bold"))
+
+plot_pca12 <- ggplot(pca_data, aes(x = PC01, y = PC02, color = species_clean)) +
+  geom_point(size = 2.5, alpha = 0.85) +
+  scale_colour_manual(values = species_colors) +
+  scale_x_continuous(breaks = seq(-1, 1, 0.1)) +
+  scale_y_continuous(breaks = seq(-1, 1, 0.1)) +
+  labs(x = pc_lab(pca_results$pca, 1), y = pc_lab(pca_results$pca, 2), color = "Taxa") +
+  pca_theme
+plot_pca12
+ggsave(file.path(out_dir, "fig7a_pca_pc1_pc2.png"), plot_pca12, width = 8, height = 6.5, dpi = 600)
+```
+
+### Figure 7b: PC1 versus PC3
+
+The original script produced only the PC1 versus PC2 plot. This panel was added so every Chapter 4 figure comes from one place. The subspecies boundary shows up on PC3 and not before.
+
+```{r fig-pca13}
+plot_pca13 <- ggplot(pca_data, aes(x = PC01, y = PC03, color = species_clean)) +
+  geom_point(size = 2.5, alpha = 0.85) +
+  scale_colour_manual(values = species_colors) +
+  scale_x_continuous(breaks = seq(-1, 1, 0.1)) +
+  scale_y_continuous(breaks = seq(-1, 1, 0.1)) +
+  labs(x = pc_lab(pca_results$pca, 1), y = pc_lab(pca_results$pca, 3), color = "Taxa") +
+  pca_theme
+plot_pca13
+ggsave(file.path(out_dir, "fig7b_pca_pc1_pc3.png"), plot_pca13, width = 8, height = 6.5, dpi = 600)
+```
+
+```{r pca-variance}
+kable(tibble(PC = paste0("PC", 1:5),
+             `Variance explained (%)` = round(pca_results$pca$varprop[1:5] * 100, 2)),
+      caption = "Variance explained by the first five axes (thesis: PC1 1.2, PC2 1.0, PC3 0.9)")
+```
+
+### Distance outlier
+
+One further sample was excluded after the PCA, for an anomalously high pairwise genetic distance to every other individual. This exclusion is applied by name, and it is already applied to the Gadi distance matrix used in section 11. The PCA above was run before this exclusion, so it includes the sample.
+
+```{r distance-outlier}
+technical_outlier_exclusions <- c("MON0667_MON0667")
+clean_sample_ids <- setdiff(pca_data$sample_id, technical_outlier_exclusions)
+pca_data_clean <- pca_data %>% filter(!sample_id %in% technical_outlier_exclusions)
+cat("Samples after the distance-outlier exclusion:", length(clean_sample_ids),
+    "(thesis analysis set: 382 = 260 pauciflora + 46 niphophila + 76 stellulata)\n")
+```
+
+## 4. Sensitivity check: LD-pruned versus stride-thinned panel
+
+The thesis used the LD-pruned panel for PCA because it is the more principled choice (independent SNPs). A stride-thinned panel (every n-th SNP, no LD criterion) was also built. LD pruning removes the high-LD sites that an inversion creates, so it can weaken inversion-linked structure. This check runs the same PCA on both panels, for the same samples, so the choice can be recorded with evidence.
+
+```{r stride-pca, cache=TRUE}
+stride_vcf <- file.path(data_dir, "snowgums_200k_stride.vcf.gz")
+stride_path <- file.path(data_dir, "snowgums_200k_stride.gds")
+
+if (file.exists(stride_vcf) || file.exists(stride_path)) {
+  if (!file.exists(stride_path)) snpgdsVCF2GDS(stride_vcf, stride_path, verbose = FALSE)
+  stride_gds <- snpgdsOpen(stride_path)
+  stride_info <- snpgdsSummary(stride_gds, show = FALSE)
+
+  shared_ids <- intersect(pca_results$pca$sample.id, stride_info$sample.id)
+  stride_pca <- snpgdsPCA(stride_gds, sample.id = shared_ids, autosome.only = FALSE, verbose = FALSE)
+  stride_df  <- pca_to_df(stride_pca) %>%
+    left_join(meta, by = join_by(sample_id == fastq_sample_name))
+  snpgdsClose(stride_gds)
+
+  cmp <- tibble(
+    Panel = c("LD-pruned", "Stride-thinned"),
+    SNPs = c(length(pruned_sampinfo$snp.id), length(stride_info$snp.id)),
+    Samples = c(length(pca_results$pca$sample.id), length(shared_ids)),
+    `PC1 (%)` = round(c(pca_results$pca$varprop[1], stride_pca$varprop[1]) * 100, 2),
+    `PC2 (%)` = round(c(pca_results$pca$varprop[2], stride_pca$varprop[2]) * 100, 2),
+    `PC3 (%)` = round(c(pca_results$pca$varprop[3], stride_pca$varprop[3]) * 100, 2)
+  )
+  kable(cmp, caption = "Variance explained by the first three axes under each panel")
+} else {
+  cat("Stride-thinned panel not found in data_dir; skipping the comparison.\n")
+}
+```
+
+```{r fig-stride, fig.height=8}
+if (exists("stride_df")) {
+  panel <- function(df, pca, y, ttl) {
+    ggplot(df, aes(x = PC01, y = .data[[y]], color = species_clean)) +
+      geom_point(size = 1.8, alpha = 0.85) +
+      scale_colour_manual(values = species_colors) +
+      labs(title = ttl, x = pc_lab(pca, 1), y = pc_lab(pca, as.integer(sub("PC", "", y))), color = "Taxa") +
+      theme_bw() + theme(legend.position = "none")
+  }
+  (panel(pca_data, pca_results$pca, "PC02", "LD-pruned, PC1 vs PC2") |
+     panel(stride_df, stride_pca, "PC02", "Stride-thinned, PC1 vs PC2")) /
+  (panel(pca_data, pca_results$pca, "PC03", "LD-pruned, PC1 vs PC3") |
+     panel(stride_df, stride_pca, "PC03", "Stride-thinned, PC1 vs PC3"))
+}
+```
+
+*Interpretation to be written once the comparison has been run and reviewed.*
+
+## 5. ADMIXTURE (to convert)
+
+Reads `snowgums_clean_pruned.K*.log` and `.{2,3}.Q`. Output: Fig. 8 (cross-validation error) and Fig. 9 (ancestry bars at K = 2 and 3). Recorded CV errors: K1 0.44437, K2 0.43577, K3 0.43549, K4 0.43847, K5 0.44555, K6 0.45065, K7 0.45799. Each K was run once, seed 43.
+
+## 6. Heterozygosity and inbreeding (to convert)
+
+Reads the three `het_*.het` files and writes Table 1. The *niphophila* run (17 Nov) used `--het small-sample` and did not apply `--read-freq` (PLINK ignored it), whereas the other two taxa used plain `--het` with `--read-freq`. Table 1 should be checked against these files before it is reported.
+
+## 7. Genome-wide Fst (to convert)
+
+Reads `pairwise_fst_results.fst.summary`. Output: Fig. 10 (heatmap).
+
+## 8. Windowed Fst (to convert)
+
+Reads the three 50 kb `.windowed.weir.fst` files. Output: Figs. 11 and 12, and the summary of the chromosome 6 block (CM074670.1, about 38 to 48.5 Mb) against the background. Note that the thesis text cites Figs. 12 and 13 for these, while the captions number them 11 and 12.
+
+## 9. Local PCA of chromosome 6 (to convert)
+
+Reads `chr6_region_pca.eigenvec` and `chr6_region_het.het`. Output: Fig. 13. A table assigning each sample to a putative karyotype cluster should be saved from this step (see the notes at the end).
+
+## 10. Latent factors (to convert)
+
+Scree plot of the *pauciflora*-only PCA (Fig. 14), which supports K = 9 for LFMM. The original script did not produce this figure.
+
+## 11. Isolation by distance (to convert)
+
+Reads `pauci_stellulata_1minusIBS.mdist` and its `.id` file (the 382-sample version from Gadi), with Mantel permutations for Appendix 3. Set the seed before the permutations.
+
+## 12. Decisions and known quirks
+
+| Item | Detail |
+|---|---|
+| SNP panel for PCA | LD-pruned panel chosen because it is more principled. Recorded as a principled choice, not a result of comparing outputs; the comparison is run in section 4. |
+| Sample IDs | PLINK 2's VCF export doubles IDs (`ID_ID`); metadata are matched to that format. |
+| Distance outlier | MON0667 removed by name after the PCA. |
+| Heterozygosity | *niphophila* run differs from the other two (see section 6). |
+| Matrix versions | The laptop copy of the distance matrix had 383 samples (it included MON0667); the Gadi copy with 382 is canonical. The older file is kept in `old/`. |
+| ADMIXTURE | Single run per K, seed 43. Command reconstructed from the logs. |
+| Mantel tests | No seed was set in the original script. |
+| R packages | Versions were not recorded originally; see the session information below. |
+
+## Notes for the paper (captured now, not acted on)
+
+These are plans and observations to keep while they are fresh. None has been started.
+
+**Planned directions**
+
+- Integrate more *niphophila* data (the current set is n = 49 from two sky islands).
+- Compute dxy (absolute divergence). A workaround exists that Kevin Murray knows about.
+- Add the other subspecies when available.
+- Focus on chromosome 6, and possibly build a reference assembly for each subspecies. Long-read sequencing is under way, at least for *niphophila* and *pauciflora*.
+- A third subspecies would span the sequencing spectrum: *pauciflora* mostly short read, *niphophila* split between short and long read, and the other subspecies almost entirely long read.
+
+**Observations to keep in mind**
+
+- dxy needs per-site denominators (callable invariant sites). The current VCF contains variant sites only and was filtered with MAC > 10, so dxy from it directly would be biased. Compute dxy between putative karyotype classes as well as between subspecies.
+- Long-read sample choice: the arrangement is polymorphic within *niphophila*, so pick individuals that are homozygous for each local-PCA cluster, and aim for haplotype-resolved assemblies. Compare against *E. regnans* and *E. stellulata* to polarize the arrangement.
+- Platform is confounded with taxon in the planned design, and mixed-platform cohorts can cluster by platform in PCA. Sequencing a few *niphophila* individuals on both platforms would allow platform error and reference bias to be measured.
+- ADMIXTURE was run once per K. A replicate sweep with several seeds would show whether K = 3 is stable and whether the K = 4 northern split is reproducible.
+- Save the sample-by-karyotype-cluster table from the chromosome 6 local PCA as a durable output.
+
+## Session information
+
+```{r session}
+sessionInfo()
+snpgdsClose(pruned_gds)
+```
